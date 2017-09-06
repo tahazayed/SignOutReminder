@@ -1,25 +1,20 @@
 package com.example.taha.signoutreminder;
 
 
-
 import android.Manifest;
-import android.content.ContentResolver;
 import android.content.ContentValues;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
 import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -31,10 +26,9 @@ public class MainActivity extends AppCompatActivity {
         addReminder.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Calendar endTime = addEvent();
-                if(endTime!=null) {
-                    Toast.makeText(getApplicationContext(), "Reminder added successfully\n Signout time:"+endTime.getTime(), Toast.LENGTH_LONG).show();
-                }
-                else {
+                if (endTime != null) {
+                    Toast.makeText(getApplicationContext(), "Reminder added successfully\n Sign out time:" + endTime.getTime(), Toast.LENGTH_LONG).show();
+                } else {
                     Toast.makeText(getApplicationContext(), "Failed to add reminder!", Toast.LENGTH_LONG).show();
                 }
             }
@@ -42,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
+
     public Calendar addEvent() {
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
@@ -55,7 +50,6 @@ public class MainActivity extends AppCompatActivity {
 
         endTime.add(Calendar.MINUTE, 510);
         try {
-
 
             String[] projection = new String[]{"_id", "name"};
             Uri calendars = Uri.parse("content://com.android.calendar/calendars");
