@@ -3,21 +3,25 @@ package com.example.taha.signoutreminder;
 
 import android.Manifest;
 import android.content.ContentValues;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.CalendarContract;
+import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity {
-
+    public final static int REQUEST_CODE = 10101;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,9 +44,14 @@ public class MainActivity extends AppCompatActivity {
     public Calendar addEvent() {
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
-            int MY_CAL_WRITE_REQ = 0;
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_CALENDAR}, MY_CAL_WRITE_REQ);
+
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_CALENDAR}, REQUEST_CODE);
         }
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_CALENDAR}, REQUEST_CODE);
+        }
+
         Calendar beginTime = Calendar.getInstance();
 
         beginTime.add(Calendar.MINUTE, 480);
@@ -62,6 +71,8 @@ public class MainActivity extends AppCompatActivity {
             int idColumn = managedCursor.getColumnIndex("_id");
 
             if (managedCursor.moveToFirst()) {
+                SimpleDateFormat format =
+                        new SimpleDateFormat("yyyyMMdd");
 
 
                 String calId = managedCursor.getString(idColumn);
@@ -74,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
                 event.put("hasAlarm", 1);
                 event.put(CalendarContract.Events.EVENT_TIMEZONE, "Africa/Cairo");
                 event.put(CalendarContract.Events.EVENT_LOCATION, "Cairo");
+                event.put(CalendarContract.Events._ID, format.format(beginTime.getTime()));
 
                 Uri eventsUri = Uri.parse("content://com.android.calendar/events");
                 Uri calUri = getContentResolver().insert(eventsUri, event);
